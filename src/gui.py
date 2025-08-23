@@ -194,7 +194,6 @@ class App(tk.Tk):
                     pdf_path=str(self.pdf_path),
                     page_nums=list(range(page_start, page_end + 1)),
                     out_path=out_file_path,
-                    dpi=200,
                     trim_top_px=trim_top,
                     trim_bottom_px=trim_bottom,
                 )

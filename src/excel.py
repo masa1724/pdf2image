@@ -20,7 +20,6 @@ def images_to_excel(
 
     row = 1
     for p in img_paths:
-        p = str(p)  # 念のため文字列に
         # 元サイズ取得（ファイルは閉じる）
         with Image.open(p) as im:
             orig_w, orig_h = im.size

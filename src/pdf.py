@@ -9,18 +9,18 @@ def pdf_to_single_image(
     pdf_path: str,
     page_nums: list[int],
     out_path: str,
-    dpi: int,
     trim_top_px: int = 0,
     trim_bottom_px: int = 0,
+    dpi: int = 200,
 ):
     # 指定ページを画像として読み込む
     imgs: list[Image.Image] = __pdf_to_images(
         pdf_path=pdf_path,
         page_nums=page_nums,
         out_path=out_path,
-        dpi=dpi,
         trim_top_px=trim_top_px,
         trim_bottom_px=trim_bottom_px,
+        dpi=dpi,
     )
 
     # 全画像の内、最も大きい横幅を取得
@@ -49,18 +49,18 @@ def pdf_to_images(
     pdf_path: str,
     page_nums: list[int],
     out_path: str,
-    dpi: int,
     trim_top_px: int = 0,
     trim_bottom_px: int = 0,
+    dpi: int = 200,
 ):
     # 指定ページを画像として読み込む
     imgs: list[Image.Image] = __pdf_to_images(
         pdf_path=pdf_path,
         page_nums=page_nums,
         out_path=out_path,
-        dpi=dpi,
         trim_top_px=trim_top_px,
         trim_bottom_px=trim_bottom_px,
+        dpi=dpi,
     )
 
     # 出力先フォルダが無ければ作成して保存
@@ -94,9 +94,9 @@ def __pdf_to_images(
     pdf_path: str,
     page_nums: list[int],
     out_path: str,
+    trim_top_px: int,
+    trim_bottom_px: int,
     dpi: int,
-    trim_top_px: int = 0,
-    trim_bottom_px: int = 0,
 ):
     # DPI(72dpi基準) → 描画倍率へ変換
     mat = fitz.Matrix(dpi / 72, dpi / 72)
