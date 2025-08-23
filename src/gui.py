@@ -94,7 +94,7 @@ class App(tk.Tk):
         self.btn_run.grid(row=5, column=3, **pad, sticky="e")
 
         # 行6: ステータス
-        self.lbl_status = ttk.Label(
+        self.lbl_status = ttk.Message(
             self, text="", anchor="w", justify="left", wraplength=440
         )
         self.lbl_status.grid(row=6, column=0, columnspan=3, **pad, sticky="ew")

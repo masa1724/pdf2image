@@ -18,6 +18,10 @@ def images_to_excel(
     approx_chars = max(10, int(fit_width_px / 7.1))
     ws.column_dimensions["A"].width = approx_chars
 
+    # 行の高さ
+    for r in range(1, 100000):
+        ws.row_dimensions[r].height = px_to_pt(36)  # 36px
+
     row = 1
     for p in img_paths:
         # 元サイズ取得（ファイルは閉じる）
@@ -36,8 +40,12 @@ def images_to_excel(
 
         ws.add_image(ximg, f"A{row}")
 
-        # 行の見積もり（18 , 3 の値は実際に出力して微調整した値で、何かを基準にした値ではない。）
-        rows_used = max(1, (new_h // 18) + 1)
-        row += rows_used + gap_rows + 3
+        # 行の見積もり（24は実際に出力して微調整した値で、何かを基準にした値ではない。）
+        rows_used = max(1, (new_h // 24) + 1)
+        row += rows_used + gap_rows
 
     wb.save(str(excel_path))
+
+
+def px_to_pt(px: float, dpi: int = 96) -> float:
+    return px * 72.0 / dpi / 1.5  # 1.5は微調整
