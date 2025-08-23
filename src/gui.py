@@ -15,7 +15,7 @@ class App(tk.Tk):
         # タイトル
         self.title("PDF画像変換")
         # ウィンドウサイズ（横x縦)
-        self.geometry("520x300")
+        self.geometry("520x260")
 
         self.pdf_path: Path | None = None
         self.out_dir_path: Path | None = None
@@ -94,10 +94,8 @@ class App(tk.Tk):
         self.btn_run.grid(row=5, column=3, **pad, sticky="e")
 
         # 行6: ステータス
-        self.lbl_status = ttk.Message(
-            self, text="", anchor="w", justify="left", wraplength=440
-        )
-        self.lbl_status.grid(row=6, column=0, columnspan=3, **pad, sticky="ew")
+        self.lbl_status = ttk.Label(self, text="")
+        self.lbl_status.grid(row=6, column=0, columnspan=3, **pad, sticky="w")
 
         for i in range(4):
             self.grid_columnconfigure(i, weight=0)
@@ -227,7 +225,7 @@ class App(tk.Tk):
                 # Excelに1ページずつ貼り付け
                 images_to_excel(img_paths=img_paths, excel_path=out_file_path)
 
-            self.lbl_status.config(text=f"完了: {str(out_file_path)}")
+            self.lbl_status.config(text="成功")
             messagebox.showinfo("完了", f"出力しました。\n{str(out_file_path)}")
 
         except Exception as e:
