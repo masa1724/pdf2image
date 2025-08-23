@@ -21,9 +21,9 @@ def pdf_to_single_image(
     with fitz.open(pdf_path) as doc:
         for page_num in page_nums:
             # PyMuPDFは0始まりのため 1引く
-            pagePix = doc.load_page(page_num - 1).get_pixmap(matrix=mat, alpha=False)
+            page_pix = doc.load_page(page_num - 1).get_pixmap(matrix=mat, alpha=False)
             # PyMuPDFのバイナリをPillow画像へ（RGBに統一）
-            im = Image.open(io.BytesIO(pagePix.tobytes("png"))).convert("RGB")
+            im = Image.open(io.BytesIO(page_pix.tobytes("png"))).convert("RGB")
 
             # ページごとに上下トリム
             top = max(0, min(trim_top_px, im.height))
