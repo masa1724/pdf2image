@@ -4,17 +4,15 @@ import fitz  # PyMuPDF
 from PIL import Image
 
 
-def pdf_to_single_image(pdf_path: str, page_nums: list[int], out_path: str, dpi: int):
-    """
-    指定した PDF ページを、1枚の縦長画像として保存する。
-
-    Args:
-        pdf_path: 入力PDFのパス
-        page_nums:    1始まりのページ番号リスト（例: [1,2,5]）
-        out_path: 出力画像のパス（拡張子でPNG/JPGなど自動判定）
-        dpi:      レンダリング解像度（例: 200）
-    """
-
+# 指定したPDFのページを、1枚の縦長画像として保存する。
+def pdf_to_single_image(
+    pdf_path: str,
+    page_nums: list[int],
+    out_path: str,
+    dpi: int,
+    trim_top_px: int = 0,
+    trim_bottom_px: int = 0,
+):
     # DPI(72dpi基準) → 描画倍率へ変換
     mat = fitz.Matrix(dpi / 72, dpi / 72)
 
@@ -25,7 +23,14 @@ def pdf_to_single_image(pdf_path: str, page_nums: list[int], out_path: str, dpi:
             # PyMuPDFは0始まりのため 1引く
             pagePix = doc.load_page(page_num - 1).get_pixmap(matrix=mat, alpha=False)
             # PyMuPDFのバイナリをPillow画像へ（RGBに統一）
-            imgs.append(Image.open(io.BytesIO(pagePix.tobytes("png"))).convert("RGB"))
+            im = Image.open(io.BytesIO(pagePix.tobytes("png"))).convert("RGB")
+
+            # ページごとに上下トリム
+            top = max(0, min(trim_top_px, im.height))
+            bottom = max(0, min(trim_bottom_px, im.height - top))
+            new_h = max(1, im.height - top - bottom)
+            im = im.crop((0, top, im.width, top + new_h))
+            imgs.append(im)
 
     # 各画像の幅を最大幅に合わせて等比リサイズ
     max_w = max(im.width for im in imgs)
@@ -48,4 +53,5 @@ def pdf_to_single_image(pdf_path: str, page_nums: list[int], out_path: str, dpi:
 
     # 出力先フォルダが無ければ作成して保存
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+    print("out_path={}".format(out_path))
     canvas.save(out_path)

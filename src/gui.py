@@ -13,7 +13,7 @@ class App(tk.Tk):
         # タイトル
         self.title("PDF画像変換")
         # ウィンドウサイズ（横x縦)
-        self.geometry("520x180")
+        self.geometry("520x300")
 
         self.pdf_path: Path | None = None
         self.out_path: Path | None = None
@@ -21,49 +21,67 @@ class App(tk.Tk):
 
         pad = {"padx": 8, "pady": 6}
 
-        # []行0: PDF選択
+        # 行0: PDF選択
         self.btn_pick = ttk.Button(self, text="PDFを選択", command=self.cmd_pick_pdf)
         self.btn_pick.grid(row=0, column=0, **pad, sticky="w")
 
-        self.lbl_pdf = ttk.Label(self, text="（未選択）", width=50)
-        self.lbl_pdf.grid(row=0, column=1, columnspan=3, **pad, sticky="w")
-
-        # 行1: 範囲（開始/終了）
-        ttk.Label(self, text="開始ページ").grid(row=1, column=0, **pad, sticky="w")
-        self.var_page_start = tk.StringVar()
-        self.spn_page_start = ttk.Spinbox(
-            self, from_=1, to=99999, width=8, textvariable=self.var_page_start
+        self.lbl_pdf = ttk.Label(
+            self, text="（未選択）", anchor="w", justify="left", wraplength=440
         )
-        self.var_page_start.set("1")
+        self.lbl_pdf.grid(row=0, column=1, columnspan=3, **pad, sticky="ew")
+
+        # 行1: ページ範囲（開始/終了）
+        ttk.Label(self, text="開始ページ").grid(row=1, column=0, **pad, sticky="w")
+        self.var_page_start = tk.StringVar(value="1")
+        self.spn_page_start = ttk.Spinbox(
+            self, from_=1, to=1, width=8, textvariable=self.var_page_start
+        )
         self.spn_page_start.grid(row=1, column=1, **pad, sticky="w")
 
         ttk.Label(self, text="終了ページ").grid(row=1, column=2, **pad, sticky="w")
-        self.var_page_end = tk.StringVar()
+        self.var_page_end = tk.StringVar(value="1")
         self.spn_page_end = ttk.Spinbox(
-            self, from_=1, to=99999, width=8, textvariable=self.var_page_end
+            self, from_=1, to=1, width=8, textvariable=self.var_page_end
         )
-        self.var_page_end.set("1")
         self.spn_page_end.grid(row=1, column=3, **pad, sticky="w")
 
-        # 行2: 出力先
+        # 行2: トリム量（上/下, px）
+        ttk.Label(self, text="上トリム(px)").grid(row=2, column=0, **pad, sticky="w")
+        self.var_trim_top = tk.StringVar(value="0")
+        self.spn_trim_top = ttk.Spinbox(
+            self, from_=0, to=99999, width=8, textvariable=self.var_trim_top
+        )
+        self.spn_trim_top.grid(row=2, column=1, **pad, sticky="w")
+
+        ttk.Label(self, text="下トリム(px)").grid(row=2, column=2, **pad, sticky="w")
+        self.var_trim_bottom = tk.StringVar(value="0")
+        self.spn_trim_bottom = ttk.Spinbox(
+            self, from_=0, to=99999, width=8, textvariable=self.var_trim_bottom
+        )
+        self.spn_trim_bottom.grid(row=2, column=3, **pad, sticky="w")
+
+        # 行3: 出力先
         self.btn_out = ttk.Button(self, text="保存先を選択", command=self.cmd_pick_out)
-        self.btn_out.grid(row=2, column=0, **pad, sticky="w")
+        self.btn_out.grid(row=3, column=0, **pad, sticky="w")
 
         self.lbl_out = ttk.Label(
-            self, text="（未選択：未指定ならPDF横に自動命名）", width=50
+            self, text="（未選択）", anchor="w", justify="left", wraplength=440
         )
-        self.lbl_out.grid(row=2, column=1, columnspan=3, **pad, sticky="w")
+        self.lbl_out.grid(row=3, column=1, columnspan=3, **pad, sticky="ew")
 
-        # 行3: 実行
+        # 行4: 実行
         self.btn_run = ttk.Button(self, text="実行", command=self.cmd_run)
-        self.btn_run.grid(row=3, column=3, **pad, sticky="e")
+        self.btn_run.grid(row=4, column=3, **pad, sticky="e")
 
-        # 行4: ステータス
-        self.lbl_status = ttk.Label(self, text="")
-        self.lbl_status.grid(row=4, column=0, columnspan=3, **pad, sticky="w")
+        # 行5: ステータス
+        self.lbl_status = ttk.Label(
+            self, text="", anchor="w", justify="left", wraplength=440
+        )
+        self.lbl_status.grid(row=5, column=0, columnspan=3, **pad, sticky="ew")
 
         for i in range(4):
-            self.grid_columnconfigure(i, weight=1)
+            self.grid_columnconfigure(i, weight=0)
+        self.grid_columnconfigure(1, weight=1)
 
     # 「PDFを選択」押下時の処理
     def cmd_pick_pdf(self):
@@ -93,10 +111,10 @@ class App(tk.Tk):
         self.var_page_start.set("1")
         self.var_page_end.set(str(self.page_count))
 
-        # 出力未選択なら仮の自動名を表示
-        if self.out_path is None:
-            default_png = self.pdf_path.with_name(f"{self.pdf_path.stem}_pages.png")
-            self.lbl_out.config(text=str(default_png))
+        # 選択したPDF名をもとに、保存先のデフォルト値を設定
+        default_png = self.pdf_path.with_name(f"{self.pdf_path.stem}.png")
+        self.out_path = Path(str(default_png))
+        self.lbl_out.config(text=str(default_png))
 
     # 「保存先を選択」押下時の処理
     def cmd_pick_out(self):
@@ -134,8 +152,17 @@ class App(tk.Tk):
             messagebox.showwarning("警告", "範囲外のページが指定されています。")
             return
         if page_start > page_end:
-            self.btn_run.config(state="disabled")
             messagebox.showwarning("警告", "開始ページが終了ページを超えています。")
+            return
+
+        try:
+            trim_top = int(self.spn_trim_top.get())
+            trim_bottom = int(self.spn_trim_bottom.get())
+        except ValueError:
+            messagebox.showwarning("警告", "トリム量は数値で入力してください。")
+            return
+        if trim_top < 0 or trim_bottom < 0:
+            messagebox.showwarning("警告", "トリム量は0以上で入力してください。")
             return
 
         # PDFの画像化
@@ -149,6 +176,8 @@ class App(tk.Tk):
                 page_nums=list(range(page_start, page_end + 1)),
                 out_path=str(self.out_path),
                 dpi=200,
+                trim_top_px=trim_top,
+                trim_bottom_px=trim_bottom,
             )
 
             self.lbl_status.config(text=f"完了: {self.out_path}")
