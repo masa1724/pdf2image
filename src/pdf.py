@@ -34,20 +34,20 @@ def pdf_to_single_image(
 
     # 各画像の幅を最大幅に合わせて等比リサイズ
     max_w = max(im.width for im in imgs)
-    norm = [
-        im
-        if im.width == max_w
-        else im.resize((max_w, int(im.height * max_w / im.width)))
-        for im in imgs
-    ]
+    # norm = [
+    #     im
+    #     if im.width == max_w
+    #     else im.resize((max_w, int(im.height * max_w / im.width)))
+    #     for im in imgs
+    # ]
 
     # キャンバスを生成（背景は白）
-    total_h = sum(im.height for im in norm)
+    total_h = sum(im.height for im in imgs)
     canvas = Image.new("RGB", (max_w, total_h), (255, 255, 255))
 
     # キャンバスの上から順に画像を貼り付け
     y = 0
-    for im in norm:
+    for im in imgs:
         canvas.paste(im, (0, y))
         y += im.height
 

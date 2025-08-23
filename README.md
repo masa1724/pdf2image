@@ -16,5 +16,5 @@ python src/main.py
 
 # 3. ビルド
 ## EXE化（distフォルダ配下にexeファイルが出力される）
-pyinstaller --onefile --windowed --specpath build --name PDFJoiner2 src/main.py
+pyinstaller --onefile --windowed --specpath build --name PDF画像変換 src/main.py
 
