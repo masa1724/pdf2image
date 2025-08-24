@@ -80,7 +80,7 @@ def pdf_to_images(
 
         # ファイルに書き出す
         new_path = path_obj.with_name(
-            f"{path_obj.stem}_part{idx:0{digits}d}{path_obj.suffix}"
+            f"{path_obj.stem}_page{page_nums[idx - 1]:0{digits}d}{path_obj.suffix}"
         )
         canvas.save(new_path, optimize=True)
 
