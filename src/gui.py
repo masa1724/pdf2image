@@ -24,7 +24,7 @@ class App(tk.Tk):
         pad = {"padx": 8, "pady": 6}
 
         # 行0: PDFを選択
-        self.btn_pick = ttk.Button(self, text="PDFを選択", command=self.cmd_select_pdf)
+        self.btn_pick = ttk.Button(self, text="PDFを選択", command=self._cmd_select_pdf)
         self.btn_pick.grid(row=0, column=0, **pad, sticky="w")
 
         self.lbl_pdf = ttk.Label(
@@ -64,7 +64,7 @@ class App(tk.Tk):
 
         # 行3: 保存先
         self.btn_out = ttk.Button(
-            self, text="保存先を選択", command=self.cmd_select_out_dir
+            self, text="保存先を選択", command=self._cmd_select_out_dir
         )
         self.btn_out.grid(row=3, column=0, **pad, sticky="w")
 
@@ -90,7 +90,7 @@ class App(tk.Tk):
         ).grid(row=4, column=2, columnspan=2, **pad, sticky="w")
 
         # 行5: 実行
-        self.btn_run = ttk.Button(self, text="実行", command=self.cmd_run)
+        self.btn_run = ttk.Button(self, text="実行", command=self._cmd_run)
         self.btn_run.grid(row=5, column=3, **pad, sticky="e")
 
         # 行6: ステータス
@@ -102,7 +102,7 @@ class App(tk.Tk):
         self.grid_columnconfigure(1, weight=1)
 
     # 「PDFを選択」押下時の処理
-    def cmd_select_pdf(self):
+    def _cmd_select_pdf(self):
         path = filedialog.askopenfilename(
             title="PDFを選択", filetypes=[("PDF", "*.pdf"), ("All Files", "*.*")]
         )
@@ -130,7 +130,7 @@ class App(tk.Tk):
         self.var_page_end.set(str(self.page_count))
 
     # 「保存先を選択」押下時の処理
-    def cmd_select_out_dir(self):
+    def _cmd_select_out_dir(self):
         path = filedialog.askdirectory(title="保存先フォルダを選択")
         if not path:
             return
@@ -138,7 +138,7 @@ class App(tk.Tk):
         self.lbl_out_dir.config(text=str(self.out_dir_path))
 
     # 「実行」押下時の処理
-    def cmd_run(self):
+    def _cmd_run(self):
         if not self.pdf_path:
             messagebox.showwarning("警告", "PDF が選択されていません。")
             return
@@ -203,7 +203,7 @@ class App(tk.Tk):
                 app_tmp_dir_path.mkdir(parents=True, exist_ok=True)
 
                 # フォルダ内のファイルを削除
-                clear_tmp_files(app_tmp_dir_path)
+                _clear_tmp_files(app_tmp_dir_path)
 
                 # Excelに貼り付ける画像ファイルパス
                 tmp_img_file_path = app_tmp_dir_path / f"{self.pdf_path.stem}.png"
@@ -237,7 +237,7 @@ class App(tk.Tk):
             self.btn_run.config(state="normal")
 
 
-def clear_tmp_files(dir_path: Path):
+def _clear_tmp_files(dir_path: Path):
     for p in dir_path.iterdir():
         if p.is_file():
             try:

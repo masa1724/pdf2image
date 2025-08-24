@@ -7,7 +7,7 @@ def images_to_excel(
     img_paths: list[str],
     excel_path: str,
     sheet_name: str = "Sheet1",
-    fit_width_px: int = 1200,
+    fit_width_px: int = 1000,
     gap_rows: int = 0,
 ):
     wb = Workbook()
@@ -18,9 +18,9 @@ def images_to_excel(
     approx_chars = max(10, int(fit_width_px / 7.1))
     ws.column_dimensions["A"].width = approx_chars
 
-    # 行の高さ
+    # 行の高さを変更（100000は特に深い意味はなく、1画像=100行としてx1000枚入るかなと）
     for r in range(1, 100000):
-        ws.row_dimensions[r].height = px_to_pt(36)  # 36px
+        ws.row_dimensions[r].height = _px_to_pt(36)  # 36px
 
     row = 1
     for p in img_paths:
@@ -33,19 +33,20 @@ def images_to_excel(
         new_w = int(orig_w * scale)
         new_h = int(orig_h * scale)
 
-        # パスから openpyxl 画像を作成してサイズだけ指定
+        # パスから openpyxl 画像を作成してサイズ変更
         ximg = XLImage(p)
         ximg.width = new_w
         ximg.height = new_h
 
+        # ワークシートに画像を追加
         ws.add_image(ximg, f"A{row}")
 
-        # 行の見積もり（24は実際に出力して微調整した値で、何かを基準にした値ではない。）
+        # 次の画像を貼り付ける行を算出（24は実際に出力しながら調整した値）
         rows_used = max(1, (new_h // 24) + 1)
         row += rows_used + gap_rows
 
     wb.save(str(excel_path))
 
 
-def px_to_pt(px: float, dpi: int = 96) -> float:
-    return px * 72.0 / dpi / 1.5  # 1.5は微調整
+def _px_to_pt(px: float, dpi: int = 96) -> float:
+    return px * 72.0 / dpi / 1.5  # 1.5は実際に出力しながら調整した値
